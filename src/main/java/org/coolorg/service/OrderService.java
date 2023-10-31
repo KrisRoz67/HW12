@@ -52,7 +52,7 @@ public class OrderService {
                  sum = sum + product1.getPrice();
              }
          }
-        return 0;
+        return sum;
     }
 
     /**

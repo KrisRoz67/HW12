@@ -36,12 +36,12 @@ public class CustomerService {
     /**
      * Удалить клиента по его уникальному идентификатору.
      *
-     * @param id Уникальный идентификатор клиента, которого нужно удалить.
+     * @param id     Уникальный идентификатор клиента, которого нужно удалить.
      * @throws IllegalArgumentException Если клиент с указанным идентификатором не существует в репозитории.
      */
     public void removeCustomer(int id) {
         Optional<Customer> byId = getById(id);
-        if (byId.isEmpty()){
+        if (byId.isPresent()){
             repository.removeCustomer(id);
         }
         else {

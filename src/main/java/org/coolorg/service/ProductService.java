@@ -36,9 +36,15 @@ public class ProductService {
         }
 
     }
-    public double getProductPrice(final Product product) {
-      return product.getPrice();
+    public double getProductPrice(int productId) {
+        if(getById(productId).isPresent()){
+            Product product = getById(productId).get();
+                return product.getPrice();
+    }else {
+        throw new IllegalArgumentException("Price can't be found");
+        }
     }
+
 
     /**
      * Удалить продукт по его уникальному идентификатору.
