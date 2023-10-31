@@ -3,6 +3,7 @@ package org.coolorg.service;
 import lombok.RequiredArgsConstructor;
 import org.coolorg.database.OrderRepository;
 import org.coolorg.model.Order;
+import org.coolorg.model.Product;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CustomerService customerService;
+    private final ProductService productService;
 
     /**
      * Получить заказ по его уникальному идентификатору.
@@ -20,7 +22,8 @@ public class OrderService {
      * @return {@link Optional}, содержащий заказ, если найден, или пустой {@link Optional}, если не найден.
      */
     public Optional<Order> getOrderById(int id) {
-       return null;
+
+        return orderRepository.getOrderById(id);
     }
 
     /**
@@ -30,7 +33,8 @@ public class OrderService {
      * @return Список заказов, связанных с клиентом.
      */
     public List<Order> getOrdersByCustomer(int customerId) {
-       return null;
+        return orderRepository.getOrdersByCustomer(customerId);
+
     }
 
     /**
@@ -40,6 +44,14 @@ public class OrderService {
      * @return Общая стоимость всех заказов для клиента.
      */
     public double getTotalPriceForCustomer(int customerId) {
+        double sum = 0;
+         for(Order o : getOrdersByCustomer(customerId)){
+             int productID = o.getProductId();
+             if(productService.getById(productID).isPresent()){
+                 Product product1 = productService.getById(productID).get();
+                 sum = sum + product1.getPrice();
+             }
+         }
         return 0;
     }
 
@@ -50,6 +62,12 @@ public class OrderService {
      * @throws IllegalArgumentException Если заказ уже существует в репозитории.
      */
     public void createOrder(Order order) {
+        Optional <Order> order1 = getOrderById(order.getId());
+        if (order1.isPresent()){
+            throw  new IllegalArgumentException("Order with this id already exist");
+        }else {
+            orderRepository.addOrder(order);
+        }
     }
 
     /**
@@ -59,6 +77,12 @@ public class OrderService {
      * @throws IllegalArgumentException Если заказ с указанным идентификатором не существует в репозитории.
      */
     public void removeOrder(int orderId) {
+        Optional <Order> orderById = getOrderById(orderId);
+        if (orderById.isEmpty()){
+            throw  new IllegalArgumentException("Order with this id doesn't exist");
+        }else {
+            orderRepository.removeOrder(orderId);
+        }
 
     }
 

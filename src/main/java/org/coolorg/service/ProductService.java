@@ -18,7 +18,7 @@ public class ProductService {
      * @return {@link Optional}, содержащий продукт, если найден, или пустой {@link Optional}, если не найден.
      */
     public Optional<Product> getById(final int id) {
-        return null;
+        return productRepository.getProductById(id);
     }
 
     /**
@@ -28,7 +28,16 @@ public class ProductService {
      * @throws IllegalArgumentException Если продукт с таким идентификатором уже существует в репозитории.
      */
     public void createProduct(final Product product) {
+        Optional<Product> product1 = getById(product.getId());
+        if (product1.isPresent()) {
+            throw new IllegalArgumentException("Product with this if already exist");
+        }else {
+            productRepository.addProduct(product);
+        }
 
+    }
+    public double getProductPrice(final Product product) {
+      return product.getPrice();
     }
 
     /**
@@ -38,6 +47,12 @@ public class ProductService {
      * @throws IllegalArgumentException Если продукт с указанным идентификатором не существует в репозитории.
      */
     public void removeProduct(final int id) {
+        Optional <Product> producById = getById(id);
+        if (producById.isEmpty()){
+            throw new IllegalArgumentException("Product with this id doesn't exist");
+        }else {
+            productRepository.removeProduct(id);
+        }
 
     }
 }

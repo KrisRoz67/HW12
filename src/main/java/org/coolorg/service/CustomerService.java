@@ -9,7 +9,6 @@ import java.util.Optional;
 public class CustomerService {
 
     private final CustomerRepository repository;
-
     /**
      * Получить клиента по его уникальному идентификатору.
      *
@@ -17,7 +16,7 @@ public class CustomerService {
      * @return {@link Optional}, содержащий клиента, если найден, или пустой {@link Optional}, если не найден.
      */
     public Optional<Customer> getById(int id) {
-        return null;
+        return repository.getCustomerById(id);
     }
 
     /**
@@ -27,6 +26,11 @@ public class CustomerService {
      * @throws IllegalArgumentException Если клиент с таким идентификатором уже существует в репозитории.
      */
     public void createCustomer(Customer customer) {
+        Optional<Customer> byId = getById(customer.getId());
+        if (byId.isPresent()){
+            throw  new IllegalArgumentException("Customer with this id already exist");
+        }
+        repository.addCustomer(customer);
     }
 
     /**
@@ -36,5 +40,12 @@ public class CustomerService {
      * @throws IllegalArgumentException Если клиент с указанным идентификатором не существует в репозитории.
      */
     public void removeCustomer(int id) {
+        Optional<Customer> byId = getById(id);
+        if (byId.isEmpty()){
+            repository.removeCustomer(id);
+        }
+        else {
+            throw new IllegalArgumentException("Customer with this id is not exist");
+        }
     }
 }
