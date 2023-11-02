@@ -1,11 +1,8 @@
 package org.coolorg.service;
-
 import org.coolorg.database.CustomerRepository;
 import org.coolorg.model.Customer;
 import org.junit.jupiter.api.Test;
-
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CustomerServiceTest {
@@ -18,12 +15,12 @@ class CustomerServiceTest {
             assertEquals("Bob", res.get().getName());
         }
         {
-            Optional<Customer> res = sut.getById(11);
-            assertEquals(Optional.empty(), res);
+            Optional<Customer> res2 = sut.getById(11);
+            assertEquals(Optional.empty(), res2);
         }
         {
-            Optional<Customer> res = sut.getById(10);
-            assertEquals("Kate", res.get().getName());
+            Optional<Customer> res1 = sut.getById(10);
+            assertEquals("Kate", res1.get().getName());
         }
 
     }
@@ -32,17 +29,21 @@ class CustomerServiceTest {
     void createCustomer() {
         {
             sut.createCustomer(new Customer(11, "Monica"));
-            assertEquals("Monica", sut.getById(11).get().getName());
+            Optional<Customer> customer1 = sut.getById(11);
+            assertEquals("Monica", customer1.get().getName());
         }
         {
             sut.createCustomer(new Customer(12, "Adam"));
-            assertEquals("Adam", sut.getById(12).get().getName());
+            Optional<Customer> customer1 = sut.getById(12);
+            assertEquals("Adam", customer1.get().getName());
         }
         {
-            assertThrows(IllegalArgumentException.class, () -> sut.createCustomer(new Customer(10, "Monica")));
+            assertThrows(IllegalArgumentException.class, () ->
+                    sut.createCustomer(new Customer(10, "Monica")));
         }
         {
-            assertThrows(IllegalArgumentException.class, () -> sut.createCustomer(new Customer(5, "Monica")));
+            assertThrows(IllegalArgumentException.class, () ->
+                    sut.createCustomer(new Customer(5, "Monica")));
         }
     }
 

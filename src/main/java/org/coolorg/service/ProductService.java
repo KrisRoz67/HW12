@@ -31,17 +31,18 @@ public class ProductService {
         Optional<Product> product1 = getById(product.getId());
         if (product1.isPresent()) {
             throw new IllegalArgumentException("Product with this if already exist");
-        }else {
+        } else {
             productRepository.addProduct(product);
         }
 
     }
+
     public double getProductPrice(int productId) {
-        if(getById(productId).isPresent()){
+        if (getById(productId).isPresent()) {
             Product product = getById(productId).get();
-                return product.getPrice();
-    }else {
-        throw new IllegalArgumentException("Price can't be found");
+            return product.getPrice();
+        } else {
+            throw new IllegalArgumentException("Price can't be found");
         }
     }
 
@@ -53,10 +54,10 @@ public class ProductService {
      * @throws IllegalArgumentException Если продукт с указанным идентификатором не существует в репозитории.
      */
     public void removeProduct(final int id) {
-        Optional <Product> producById = getById(id);
-        if (producById.isEmpty()){
+        Optional<Product> producById = getById(id);
+        if (producById.isEmpty()) {
             throw new IllegalArgumentException("Product with this id doesn't exist");
-        }else {
+        } else {
             productRepository.removeProduct(id);
         }
 

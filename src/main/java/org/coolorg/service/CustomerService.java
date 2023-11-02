@@ -5,10 +5,12 @@ import org.coolorg.database.CustomerRepository;
 import org.coolorg.model.Customer;
 
 import java.util.Optional;
+
 @RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository repository;
+
     /**
      * Получить клиента по его уникальному идентификатору.
      *
@@ -27,8 +29,8 @@ public class CustomerService {
      */
     public void createCustomer(Customer customer) {
         Optional<Customer> byId = getById(customer.getId());
-        if (byId.isPresent()){
-            throw  new IllegalArgumentException("Customer with this id already exist");
+        if (byId.isPresent()) {
+            throw new IllegalArgumentException("Customer with this id already exist");
         }
         repository.addCustomer(customer);
     }
@@ -36,15 +38,14 @@ public class CustomerService {
     /**
      * Удалить клиента по его уникальному идентификатору.
      *
-     * @param id     Уникальный идентификатор клиента, которого нужно удалить.
+     * @param id Уникальный идентификатор клиента, которого нужно удалить.
      * @throws IllegalArgumentException Если клиент с указанным идентификатором не существует в репозитории.
      */
     public void removeCustomer(int id) {
         Optional<Customer> byId = getById(id);
-        if (byId.isPresent()){
+        if (byId.isPresent()) {
             repository.removeCustomer(id);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Customer with this id is not exist");
         }
     }

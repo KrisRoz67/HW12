@@ -18,15 +18,19 @@ class OrderServiceTest {
 
     @Test
     void getOrderById() {
-        if (o.getOrderById(1).isPresent()) {
-            assertEquals(1, o.getOrderById(1).get().getCustomerId());
+        {
+            Optional<Order> order1 = o.getOrderById(1);
+            assertEquals(1, order1.get().getCustomerId());
         }
-        if (o.getOrderById(1).isPresent()) {
-            assertEquals(1, o.getOrderById(1).get().getProductId());
+        {
+            Optional<Order> order1 = o.getOrderById(1);
+            assertEquals(1, order1.get().getProductId());
         }
-
-        assertEquals(Optional.empty(), o.getOrderById(118));
+        {
+            assertEquals(Optional.empty(), o.getOrderById(118));
+        }
     }
+
 
     @Test
     void getOrdersByCustomer() {
@@ -37,34 +41,49 @@ class OrderServiceTest {
             assertEquals(expected, customerOrders);
 
         }
-        List<Integer> customerOrders = o.getOrdersByCustomer(9)
-                .stream().map(Order::getProductId).toList();
-        List<Integer> expected = List.of(4);
-        assertEquals(expected, customerOrders);
+        {
+            List<Integer> customerOrders = o.getOrdersByCustomer(9)
+                    .stream().map(Order::getProductId).toList();
+            List<Integer> expected = List.of(4);
+            assertEquals(expected, customerOrders);
+        }
 
     }
 
     @Test
     void getTotalPriceForCustomer() {
-        assertEquals(3.0, o.getTotalPriceForCustomer(9));
-        assertEquals(0.0, o.getTotalPriceForCustomer(3));
+        {
+            assertEquals(3.0, o.getTotalPriceForCustomer(9));
+        }
+        {
+            assertEquals(0.0, o.getTotalPriceForCustomer(3));
+        }
     }
 
     @Test
     void createOrder() {
-        o.createOrder(new Order(12, 2, 1));
-        if(o.getOrderById(12).isPresent()) {
-            assertEquals(2, o.getOrderById(12).get().getCustomerId());
+        {
+            o.createOrder(new Order(12, 2, 1));
+            Optional<Order> order1 = o.getOrderById(12);
+            assertEquals(2, order1.get().getCustomerId());
         }
-        assertThrows(IllegalArgumentException.class, () ->
-                o.createOrder(new Order(1, 1, 1)));
+
+        {
+            assertThrows(IllegalArgumentException.class, () ->
+                    o.createOrder(new Order(1, 1, 1)));
+        }
+
     }
 
     @Test
     void removeOrder() {
-        o.removeOrder(2);
-        assertEquals(Optional.empty(), o.getOrderById(2));
-        assertThrows(IllegalArgumentException.class, () ->
-                o.removeOrder(1233));
+        {
+            o.removeOrder(2);
+            assertEquals(Optional.empty(), o.getOrderById(2));
+        }
+        {
+            assertThrows(IllegalArgumentException.class, () ->
+                    o.removeOrder(1233));
+        }
     }
 }

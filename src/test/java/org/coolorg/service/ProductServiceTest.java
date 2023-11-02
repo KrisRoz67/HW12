@@ -13,35 +13,47 @@ class ProductServiceTest {
 
     @Test
     void getById() {
-        assertEquals(Optional.empty(),p.getById(100));
-        if (p.getById(5).isPresent()) {
-            assertEquals("Product 5", p.getById(5).get().getName());
+        {
+            assertEquals(Optional.empty(), p.getById(100));
+        }
+        {
+                Optional<Product> product1 = p.getById(5);
+                assertEquals("Product 5", product1.get().getName());
         }
 
     }
 
     @Test
     void createProduct() {
-        assertThrows(IllegalArgumentException.class, () ->
-                p.createProduct(new Product(1,"Product1",5.5)));
-        p.createProduct(new Product(13,"Product 13", 2.20));
-        if( p.getById(13).isPresent()) {
-            assertEquals(2.20, p.getById(13).get().getPrice());
+        {
+            assertThrows(IllegalArgumentException.class, () ->
+                    p.createProduct(new Product(1, "Product1", 5.5)));
+        }
+        {
+            p.createProduct(new Product(13, "Product 13", 2.20));
+            Optional<Product> product1 = p.getById(13);
+            assertEquals(2.20, product1.get().getPrice());
         }
     }
 
     @Test
     void getProductPrice() {
-       assertEquals(5.50,p.getProductPrice(2));
-       assertThrows(IllegalArgumentException.class,() -> p.getProductPrice(23));
+        {
+            assertEquals(5.50, p.getProductPrice(2));
+        }
+        {
+            assertThrows(IllegalArgumentException.class, () -> p.getProductPrice(23));
+        }
     }
 
     @Test
     void removeProduct() {
-
-        assertThrows(IllegalArgumentException.class,() -> p.removeProduct(111));
-        p.removeProduct(2);
-        assertEquals(Optional.empty(),p.getById(2));
-
+        {
+            assertThrows(IllegalArgumentException.class, () -> p.removeProduct(111));
+        }
+        {
+            p.removeProduct(2);
+            assertEquals(Optional.empty(), p.getById(2));
+        }
     }
 }
