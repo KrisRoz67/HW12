@@ -8,6 +8,7 @@ import org.coolorg.service.CustomerService;
 import org.coolorg.service.OrderService;
 import org.coolorg.service.ProductService;
 import java.util.List;
+import java.util.Optional;
 
 
 public class Application {
@@ -30,7 +31,7 @@ public class Application {
         List<Integer> productsList = o.getOrdersByCustomer(2).stream().map(Order::getProductId).toList();
         List<String> str = productsList.stream()
                 .map(p::getById)
-                .filter(product -> product.isPresent())
+                .filter(Optional::isPresent)
                 .map(product -> product.get().getName())
                 .toList();
         System.out.printf("Client ordered  %s", str);

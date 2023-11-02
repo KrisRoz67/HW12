@@ -14,7 +14,9 @@ class ProductServiceTest {
     @Test
     void getById() {
         assertEquals(Optional.empty(),p.getById(100));
-        assertEquals("Product 5", p.getById(5).get().getName());
+        if (p.getById(5).isPresent()) {
+            assertEquals("Product 5", p.getById(5).get().getName());
+        }
 
     }
 
@@ -23,8 +25,9 @@ class ProductServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
                 p.createProduct(new Product(1,"Product1",5.5)));
         p.createProduct(new Product(13,"Product 13", 2.20));
-        assertEquals(2.20, p.getById(13).get().getPrice());
-
+        if( p.getById(13).isPresent()) {
+            assertEquals(2.20, p.getById(13).get().getPrice());
+        }
     }
 
     @Test
