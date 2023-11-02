@@ -15,7 +15,6 @@ public class Application {
     public static void main(String[] args) {
         final CustomerService c = new CustomerService(new CustomerRepository());
         final OrderService o = new OrderService(new OrderRepository(),
-                new CustomerService(new CustomerRepository()),
                 new ProductService(new ProductRepository()));
 
         final ProductService p = new ProductService(new ProductRepository());
@@ -34,8 +33,9 @@ public class Application {
                 .filter(Optional::isPresent)
                 .map(product -> product.get().getName())
                 .toList();
-        System.out.printf("Client ordered  %s", str);
+        System.out.printf("Client ordered  %s\n", str);
         c.removeCustomer(2);
+        System.out.println(c.getById(2).isPresent() ? "Customer was not deleted" : "Customer was deleted");
     }
 
 }

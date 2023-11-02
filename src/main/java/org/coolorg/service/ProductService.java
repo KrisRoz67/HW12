@@ -30,7 +30,7 @@ public class ProductService {
     public void createProduct(final Product product) {
         Optional<Product> product1 = getById(product.getId());
         if (product1.isPresent()) {
-            throw new IllegalArgumentException("Product with this if already exist");
+            throw new IllegalArgumentException("Product with this id already exist");
         } else {
             productRepository.addProduct(product);
         }

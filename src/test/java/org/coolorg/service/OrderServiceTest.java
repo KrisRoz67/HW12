@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderServiceTest {
     private final OrderService o = new OrderService(new OrderRepository(),
-            new CustomerService(new CustomerRepository()),
+           // new CustomerService(new CustomerRepository()),
             new ProductService(new ProductRepository()));
 
     @Test

@@ -46,7 +46,7 @@ public class CustomerService {
         if (byId.isPresent()) {
             repository.removeCustomer(id);
         } else {
-            throw new IllegalArgumentException("Customer with this id is not exist");
+            throw new IllegalArgumentException("Customer with this id doesn't exist");
         }
     }
 }
