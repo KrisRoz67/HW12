@@ -2,58 +2,76 @@ package org.coolorg.service;
 
 import org.coolorg.database.ProductRepository;
 import org.coolorg.model.Product;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
-    private final ProductService p = new ProductService(new ProductRepository());
+    private ProductService p;
+
+    @Mock
+    private ProductRepository productRep;
+
+    @BeforeEach
+    void run() {
+        p = new ProductService(productRep);
+    }
+
 
     @Test
     void getById() {
-        {
-            assertEquals(Optional.empty(), p.getById(100));
-        }
-        {
-                Optional<Product> product1 = p.getById(5);
-                assertEquals("Product 5", product1.get().getName());
-        }
+        Mockito.when(productRep.getProductById(12)).thenReturn(Optional.of(new Product()));
+        Optional<Product> product1 = p.getById(12);
+        assertNotEquals(Optional.empty(), product1);
+    }
+
+    @Test
+    void getById_empty() {
+        Mockito.when(productRep.getProductById(120)).thenReturn(Optional.empty());
+        Optional<Product> product1 = p.getById(120);
+        assertEquals(Optional.empty(), product1);
 
     }
 
     @Test
     void createProduct() {
-        {
-            assertThrows(IllegalArgumentException.class, () ->
-                    p.createProduct(new Product(1, "Product1", 5.5)));
-        }
-        {
-            p.createProduct(new Product(13, "Product 13", 2.20));
-            Optional<Product> product1 = p.getById(13);
-            assertEquals(2.20, product1.get().getPrice());
-        }
+        p.createProduct(new Product(1, "Product 1", 1));
+        Mockito.verify(productRep, Mockito.times(1)).addProduct(new Product(1, "Product 1", 1));
+    }
+
+    @Test
+    void createExistProduct() {
+        Mockito.when(productRep.getProductById(16)).thenReturn(Optional.of(new Product(16, "Product 16", 16)));
+        assertThrows(IllegalArgumentException.class, () -> p.createProduct(new Product(16, "Product 16", 16)));
     }
 
     @Test
     void getProductPrice() {
-        {
-            assertEquals(5.50, p.getProductPrice(2));
-        }
-        {
-            assertThrows(IllegalArgumentException.class, () -> p.getProductPrice(23));
-        }
+        Mockito.when(productRep.getProductById(6)).thenReturn(Optional.of(new Product(6, "Product 6", 7)));
+        double price = p.getProductPrice(6);
+        assertEquals(7, price);
     }
 
     @Test
     void removeProduct() {
-        {
-            assertThrows(IllegalArgumentException.class, () -> p.removeProduct(111));
-        }
-        {
-            p.removeProduct(2);
-            assertEquals(Optional.empty(), p.getById(2));
-        }
+
+        Mockito.when(productRep.getProductById(12)).thenReturn(Optional.of(new Product()));
+        p.removeProduct(12);
+        Mockito.verify(productRep, Mockito.times(1)).removeProduct(12);
+    }
+
+    @Test
+    void removeNonExistProduct() {
+        Mockito.when(productRep.getProductById(11)).thenReturn(Optional.empty());
+        Optional<Product> product1 = p.getById(11);
+        assertThrows(IllegalArgumentException.class, () -> p.removeProduct(11));
     }
 }

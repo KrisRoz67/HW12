@@ -46,8 +46,9 @@ public class OrderService {
         double sum = 0;
         for (Order o : getOrdersByCustomer(customerId)) {
             int productID = o.getProductId();
-            if (productService.getById(productID).isPresent()) {
-                Product product1 = productService.getById(productID).get();
+            Optional<Product> productById = productService.getById(productID);
+            if (productById.isPresent()) {
+                Product product1 = productById.get();
                 sum = sum + product1.getPrice();
             }
         }

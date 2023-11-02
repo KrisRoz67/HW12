@@ -1,66 +1,81 @@
 package org.coolorg.service;
+
 import org.coolorg.database.CustomerRepository;
 import org.coolorg.model.Customer;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.verification.VerificationMode;
 
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+
+@ExtendWith(MockitoExtension.class)
 class CustomerServiceTest {
-    private final CustomerService sut = new CustomerService(new CustomerRepository());
+
+    private CustomerService sut;
+    @Mock
+    private CustomerRepository repository;
+
+    @BeforeEach
+    void run() {
+        sut = new CustomerService(repository);
+    }
 
     @Test
-    void getById() {
-        {
-            Optional<Customer> res = sut.getById(1);
-            assertEquals("Bob", res.get().getName());
-        }
-        {
-            Optional<Customer> res2 = sut.getById(11);
-            assertEquals(Optional.empty(), res2);
-        }
-        {
-            Optional<Customer> res1 = sut.getById(10);
-            assertEquals("Kate", res1.get().getName());
-        }
+    void getById_present() {
 
+        Mockito.when(repository.getCustomerById(anyInt())).thenReturn(Optional.of(new Customer()));
+        Optional<Customer> res = sut.getById(0);
+        assertNotEquals(Optional.empty(), res);
+    }
+
+    @Test
+    void getById_empty() {
+
+        Mockito.when(sut.getById(10)).thenReturn(Optional.empty());
+        Optional<Customer> res2 = sut.getById(10);
+        assertEquals(Optional.empty(), res2);
     }
 
     @Test
     void createCustomer() {
-        {
-            sut.createCustomer(new Customer(11, "Monica"));
-            Optional<Customer> customer1 = sut.getById(11);
-            assertEquals("Monica", customer1.get().getName());
-        }
-        {
-            sut.createCustomer(new Customer(12, "Adam"));
-            Optional<Customer> customer1 = sut.getById(12);
-            assertEquals("Adam", customer1.get().getName());
-        }
-        {
-            assertThrows(IllegalArgumentException.class, () ->
-                    sut.createCustomer(new Customer(10, "Monica")));
-        }
-        {
-            assertThrows(IllegalArgumentException.class, () ->
-                    sut.createCustomer(new Customer(5, "Monica")));
-        }
+
+        sut.createCustomer(new Customer(13, "Albina"));
+        Mockito.verify(repository, Mockito.times(1))
+                .addCustomer(new Customer(13, "Albina"));
+    }
+
+    @Test
+    void createExistCustomer() {
+
+        Mockito.when(repository.getCustomerById(11)).
+                thenReturn(Optional.of(new Customer(11, "Elina")));
+        assertThrows(IllegalArgumentException.class, () ->
+                sut.createCustomer(new Customer(11, "Elina")));
     }
 
     @Test
     void removeCustomer() {
-        {
-            sut.createCustomer(new Customer(13, "Maria"));
-            sut.removeCustomer(13);
-            assertEquals(Optional.empty(), sut.getById(11));
-        }
-        {
-            sut.removeCustomer(2);
-            assertEquals(Optional.empty(), sut.getById(11));
-        }
-        {
-            assertThrows(IllegalArgumentException.class, () -> sut.removeCustomer(27));
-        }
+
+        Mockito.when(repository.getCustomerById(13)).thenReturn(Optional.of(new Customer()));
+        sut.removeCustomer(13);
+        Mockito.verify(repository, Mockito.times(1)).removeCustomer(13);
 
     }
+
+    @Test
+    void removeNonExistCustomer() {
+
+        Mockito.when(repository.getCustomerById(27)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> sut.removeCustomer(27));
+    }
+
 }

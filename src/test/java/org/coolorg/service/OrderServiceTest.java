@@ -1,89 +1,112 @@
 package org.coolorg.service;
 
-import org.coolorg.database.CustomerRepository;
 import org.coolorg.database.OrderRepository;
-import org.coolorg.database.ProductRepository;
 import org.coolorg.model.Order;
+import org.coolorg.model.Product;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
 
+@ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
-    private final OrderService o = new OrderService(new OrderRepository(),
-           // new CustomerService(new CustomerRepository()),
-            new ProductService(new ProductRepository()));
+
+    private OrderService o;
+
+    @Mock
+    private ProductService productService;
+    @Mock
+    private OrderRepository orderRep;
+
+
+    @BeforeEach
+    void run() {
+        o = new OrderService(orderRep, productService);
+    }
+
 
     @Test
     void getOrderById() {
-        {
-            Optional<Order> order1 = o.getOrderById(1);
-            assertEquals(1, order1.get().getCustomerId());
-        }
-        {
-            Optional<Order> order1 = o.getOrderById(1);
-            assertEquals(1, order1.get().getProductId());
-        }
-        {
-            assertEquals(Optional.empty(), o.getOrderById(118));
-        }
+
+        Mockito.when(orderRep.getOrderById(anyInt())).thenReturn(Optional.of(new Order()));
+        Optional<Order> res = orderRep.getOrderById(10);
+        assertNotEquals(Optional.empty(), res);
+    }
+
+    @Test
+    void getById_empty() {
+
+        Mockito.when(orderRep.getOrderById(203)).thenReturn(Optional.empty());
+        Optional<Order> res = o.getOrderById(203);
+        assertEquals(Optional.empty(), res);
     }
 
 
     @Test
     void getOrdersByCustomer() {
-        {
-            List<Integer> customerOrders = o.getOrdersByCustomer(2)
-                    .stream().map(Order::getProductId).toList();
-            List<Integer> expected = List.of(3, 2, 1);
-            assertEquals(expected, customerOrders);
 
-        }
-        {
-            List<Integer> customerOrders = o.getOrdersByCustomer(9)
-                    .stream().map(Order::getProductId).toList();
-            List<Integer> expected = List.of(4);
-            assertEquals(expected, customerOrders);
-        }
+        List<Order> e = List.of(new Order(1, 2, 3), new Order(2, 2, 3));
+        Mockito.when(orderRep.getOrdersByCustomer(12)).
+                thenReturn(e);
+        assertNotEquals(Collections.emptyList(), o.getOrdersByCustomer(12));
+
+    }
+
+
+    @Test
+    void getTotalPriceForCustomer() {
+
+        List<Order> orders = List.of(new Order(1, 1, 1), new Order(2, 1, 1));
+        Mockito.when(orderRep.getOrdersByCustomer(1)).
+                thenReturn(orders);
+        Mockito.when(productService.getById(1)).
+                thenReturn(Optional.of(new Product(1, "Product 1", 3.0)));
+        double sum = o.getTotalPriceForCustomer(1);
+        assertEquals(6.0, sum);
 
     }
 
     @Test
-    void getTotalPriceForCustomer() {
-        {
-            assertEquals(3.0, o.getTotalPriceForCustomer(9));
-        }
-        {
-            assertEquals(0.0, o.getTotalPriceForCustomer(3));
-        }
+    void createExistedOrder() {
+
+        Mockito.when(orderRep.getOrderById(10)).
+                thenReturn(Optional.of(new Order(10, 1, 1)));
+        assertThrows(IllegalArgumentException.class, () ->
+                o.createOrder(new Order(10, 1, 1)));
     }
 
     @Test
     void createOrder() {
-        {
-            o.createOrder(new Order(12, 2, 1));
-            Optional<Order> order1 = o.getOrderById(12);
-            assertEquals(2, order1.get().getCustomerId());
-        }
 
-        {
-            assertThrows(IllegalArgumentException.class, () ->
-                    o.createOrder(new Order(1, 1, 1)));
-        }
+        o.createOrder(new Order(10, 1, 1));
+        Mockito.verify(orderRep, Mockito.times(1))
+                .addOrder(new Order(10, 1, 1));
+    }
+
+
+    @Test
+    void removeOrder() {
+
+        Mockito.when(orderRep.getOrderById(12)).thenReturn(Optional.of(new Order()));
+        o.removeOrder(12);
+        Mockito.verify(orderRep, Mockito.times(1)).removeOrder(12);
 
     }
 
     @Test
-    void removeOrder() {
-        {
-            o.removeOrder(2);
-            assertEquals(Optional.empty(), o.getOrderById(2));
-        }
-        {
-            assertThrows(IllegalArgumentException.class, () ->
-                    o.removeOrder(1233));
-        }
+    void removeNonExistOrder() {
+
+        Mockito.when(orderRep.getOrderById(11)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> o.removeOrder(11));
+
     }
 }
