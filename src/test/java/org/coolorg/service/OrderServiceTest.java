@@ -38,16 +38,16 @@ class OrderServiceTest {
     void getOrderById() {
 
         Mockito.when(orderRep.getOrderById(anyInt())).thenReturn(Optional.of(new Order()));
-        Optional<Order> res = orderRep.getOrderById(10);
-        assertNotEquals(Optional.empty(), res);
+        Optional<Order> maybeOrder = orderRep.getOrderById(10);
+        assertNotEquals(Optional.empty(), maybeOrder );
     }
 
     @Test
     void getById_empty() {
 
         Mockito.when(orderRep.getOrderById(203)).thenReturn(Optional.empty());
-        Optional<Order> res = o.getOrderById(203);
-        assertEquals(Optional.empty(), res);
+        Optional<Order>  maybeOrder  = o.getOrderById(203);
+        assertEquals(Optional.empty(),  maybeOrder );
     }
 
 
@@ -57,7 +57,7 @@ class OrderServiceTest {
         List<Order> e = List.of(new Order(1, 2, 3), new Order(2, 2, 3));
         Mockito.when(orderRep.getOrdersByCustomer(12)).
                 thenReturn(e);
-        assertNotEquals(Collections.emptyList(), o.getOrdersByCustomer(12));
+        assertEquals(2, o.getOrdersByCustomer(12).size());
 
     }
 
