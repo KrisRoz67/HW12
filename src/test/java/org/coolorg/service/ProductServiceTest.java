@@ -71,7 +71,6 @@ class ProductServiceTest {
     @Test
     void removeNonExistProduct() {
         Mockito.when(productRep.getProductById(11)).thenReturn(Optional.empty());
-        Optional<Product> product1 = p.getById(11);
         assertThrows(IllegalArgumentException.class, () -> p.removeProduct(11));
     }
 }
