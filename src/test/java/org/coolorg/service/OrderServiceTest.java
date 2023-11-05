@@ -23,27 +23,27 @@ class OrderServiceTest {
     @Mock
     private ProductService productService;
     @Mock
-    private OrderRepository orderRep;
+    private OrderRepository orderRepository;
 
 
     @BeforeEach
     void run() {
-        o = new OrderService(orderRep, productService);
+        o = new OrderService(orderRepository, productService);
     }
 
 
     @Test
     void getOrderById() {
 
-        Mockito.when(orderRep.getOrderById(anyInt())).thenReturn(Optional.of(new Order()));
-        Optional<Order> maybeOrder = orderRep.getOrderById(10);
+        Mockito.when(orderRepository.getOrderById(anyInt())).thenReturn(Optional.of(new Order()));
+        Optional<Order> maybeOrder = orderRepository.getOrderById(10);
         assertTrue(maybeOrder.isPresent());
     }
 
     @Test
     void getById_empty() {
 
-        Mockito.when(orderRep.getOrderById(203)).thenReturn(Optional.empty());
+        Mockito.when(orderRepository.getOrderById(203)).thenReturn(Optional.empty());
         Optional<Order>  maybeOrder  = o.getOrderById(203);
         assertTrue(maybeOrder.isEmpty() );
     }
@@ -53,7 +53,7 @@ class OrderServiceTest {
     void getOrdersByCustomer() {
 
         List<Order> e = List.of(new Order(1, 2, 3), new Order(2, 2, 3));
-        Mockito.when(orderRep.getOrdersByCustomer(12)).
+        Mockito.when(orderRepository.getOrdersByCustomer(12)).
                 thenReturn(e);
         assertEquals(2, o.getOrdersByCustomer(12).size());
 
@@ -64,7 +64,7 @@ class OrderServiceTest {
     void getTotalPriceForCustomer() {
 
         List<Order> orders = List.of(new Order(1, 1, 1), new Order(2, 1, 1));
-        Mockito.when(orderRep.getOrdersByCustomer(1)).
+        Mockito.when(orderRepository.getOrdersByCustomer(1)).
                 thenReturn(orders);
         Mockito.when(productService.getById(1)).
                 thenReturn(Optional.of(new Product(1, "Product 1", 3.0)));
@@ -76,7 +76,7 @@ class OrderServiceTest {
     @Test
     void createExistedOrder() {
 
-        Mockito.when(orderRep.getOrderById(10)).
+        Mockito.when(orderRepository.getOrderById(10)).
                 thenReturn(Optional.of(new Order(10, 1, 1)));
         assertThrows(IllegalArgumentException.class, () ->
                 o.createOrder(new Order(10, 1, 1)));
@@ -86,7 +86,7 @@ class OrderServiceTest {
     void createOrder() {
 
         o.createOrder(new Order(10, 1, 1));
-        Mockito.verify(orderRep, Mockito.times(1))
+        Mockito.verify(orderRepository, Mockito.times(1))
                 .addOrder(new Order(10, 1, 1));
     }
 
@@ -94,16 +94,16 @@ class OrderServiceTest {
     @Test
     void removeOrder() {
 
-        Mockito.when(orderRep.getOrderById(12)).thenReturn(Optional.of(new Order()));
+        Mockito.when(orderRepository.getOrderById(12)).thenReturn(Optional.of(new Order()));
         o.removeOrder(12);
-        Mockito.verify(orderRep, Mockito.times(1)).removeOrder(12);
+        Mockito.verify(orderRepository, Mockito.times(1)).removeOrder(12);
 
     }
 
     @Test
     void removeNonExistOrder() {
 
-        Mockito.when(orderRep.getOrderById(11)).thenReturn(Optional.empty());
+        Mockito.when(orderRepository.getOrderById(11)).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> o.removeOrder(11));
 
     }
