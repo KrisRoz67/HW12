@@ -12,7 +12,6 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final CustomerService customerService;
     private final ProductService productService;
 
     /**
@@ -45,14 +44,15 @@ public class OrderService {
      */
     public double getTotalPriceForCustomer(int customerId) {
         double sum = 0;
-         for(Order o : getOrdersByCustomer(customerId)){
-             int productID = o.getProductId();
-             if(productService.getById(productID).isPresent()){
-                 Product product1 = productService.getById(productID).get();
-                 sum = sum + product1.getPrice();
-             }
-         }
-        return 0;
+        for (Order o : getOrdersByCustomer(customerId)) {
+            int productID = o.getProductId();
+            Optional<Product> productById = productService.getById(productID);
+            if (productById.isPresent()) {
+                Product product1 = productById.get();
+                sum = sum + product1.getPrice();
+            }
+        }
+        return sum;
     }
 
     /**
@@ -62,10 +62,10 @@ public class OrderService {
      * @throws IllegalArgumentException Если заказ уже существует в репозитории.
      */
     public void createOrder(Order order) {
-        Optional <Order> order1 = getOrderById(order.getId());
-        if (order1.isPresent()){
-            throw  new IllegalArgumentException("Order with this id already exist");
-        }else {
+        Optional<Order> order1 = getOrderById(order.getId());
+        if (order1.isPresent()) {
+            throw new IllegalArgumentException("Order with this id already exist");
+        } else {
             orderRepository.addOrder(order);
         }
     }
@@ -77,10 +77,10 @@ public class OrderService {
      * @throws IllegalArgumentException Если заказ с указанным идентификатором не существует в репозитории.
      */
     public void removeOrder(int orderId) {
-        Optional <Order> orderById = getOrderById(orderId);
-        if (orderById.isEmpty()){
-            throw  new IllegalArgumentException("Order with this id doesn't exist");
-        }else {
+        Optional<Order> orderById = getOrderById(orderId);
+        if (orderById.isEmpty()) {
+            throw new IllegalArgumentException("Order with this id doesn't exist");
+        } else {
             orderRepository.removeOrder(orderId);
         }
 
