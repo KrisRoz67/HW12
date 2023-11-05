@@ -30,14 +30,14 @@ class ProductServiceTest {
     void getById() {
         Mockito.when(productRep.getProductById(12)).thenReturn(Optional.of(new Product()));
         Optional<Product> maybeProduct = p.getById(12);
-        assertNotEquals(Optional.empty(), maybeProduct);
+        assertTrue( maybeProduct.isPresent());
     }
 
     @Test
     void getById_empty() {
         Mockito.when(productRep.getProductById(120)).thenReturn(Optional.empty());
         Optional<Product> maybeProduct= p.getById(120);
-        assertEquals(Optional.empty(), maybeProduct);
+        assertTrue(maybeProduct.isEmpty());
 
     }
 

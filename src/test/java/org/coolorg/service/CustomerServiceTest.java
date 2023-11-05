@@ -34,7 +34,7 @@ class CustomerServiceTest {
 
         Mockito.when(repository.getCustomerById(anyInt())).thenReturn(Optional.of(new Customer()));
         Optional<Customer> maybeCustomer = sut.getById(0);
-        assertNotEquals(Optional.empty(), maybeCustomer);
+        assertTrue(maybeCustomer.isPresent());
     }
 
     @Test
@@ -42,7 +42,7 @@ class CustomerServiceTest {
 
         Mockito.when(sut.getById(10)).thenReturn(Optional.empty());
         Optional<Customer> maybeCustomer = sut.getById(10);
-        assertEquals(Optional.empty(), maybeCustomer);
+        assertTrue(maybeCustomer.isEmpty());
     }
 
     @Test

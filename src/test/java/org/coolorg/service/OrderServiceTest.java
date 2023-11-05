@@ -39,7 +39,7 @@ class OrderServiceTest {
 
         Mockito.when(orderRep.getOrderById(anyInt())).thenReturn(Optional.of(new Order()));
         Optional<Order> maybeOrder = orderRep.getOrderById(10);
-        assertNotEquals(Optional.empty(), maybeOrder );
+        assertTrue(maybeOrder.isPresent());
     }
 
     @Test
@@ -47,7 +47,7 @@ class OrderServiceTest {
 
         Mockito.when(orderRep.getOrderById(203)).thenReturn(Optional.empty());
         Optional<Order>  maybeOrder  = o.getOrderById(203);
-        assertEquals(Optional.empty(),  maybeOrder );
+        assertTrue(maybeOrder.isEmpty() );
     }
 
 
